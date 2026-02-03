@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel Logística</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#121a33;
+      --card2:#0f1630;
+      --text:#e8ecff;
+      --muted:#a9b3d1;
+      --line:rgba(255,255,255,.12);
+      --ok:#2ee59d;
+      --err:#ff5b6e;
+      --warn:#ffd166;
+      --btn:#2d5bff;
+      --btn2:#1e2a52;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 500px at 20% 0%, #18235a, transparent),
+                  radial-gradient(900px 400px at 80% 20%, #241b5f, transparent),
+                  var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding:18px 18px 10px;
+      border-bottom:1px solid var(--line);
+      position:sticky; top:0;
+      background: rgba(11,16,32,.72);
+      backdrop-filter: blur(10px);
+    }
+    .title{
+      display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+    }
+    h1{font-size:20px; margin:0}
+    .pill{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+    main{padding:18px; max-width:1200px; margin:0 auto}
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent 40%), var(--card);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      box-shadow: 0 14px 30px rgba(0,0,0,.22);
+    }
+    .card h2{
+      margin:0 0 10px;
+      font-size:14px;
+      color:var(--muted);
+      letter-spacing:.3px;
+      text-transform:uppercase;
+    }
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    @media (max-width: 560px){
+      .row{grid-template-columns: 1fr}
+    }
+    label{font-size:12px; color:var(--muted)}
+    input{
+      width:100%;
+      margin-top:6px;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background: var(--card2);
+      color:var(--text);
+      outline:none;
+    }
+    input:focus{border-color: rgba(45,91,255,.65)}
+    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    button{
+      border:0;
+      border-radius:10px;
+      padding:10px 12px;
+      cursor:pointer;
+      color:var(--text);
+      background: var(--btn2);
+      border:1px solid var(--line);
+      font-weight:600;
+    }
+    button.primary{background: var(--btn); border-color: rgba(45,91,255,.6)}
+    button.danger{background: rgba(255,91,110,.12); border-color: rgba(255,91,110,.4)}
+    button:active{transform: translateY(1px)}
+    .status{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:var(--muted);
+      min-height:40px;
+      white-space:pre-wrap;
+    }
+    .status.ok{border-color: rgba(46,229,157,.35); color: var(--ok)}
+    .status.err{border-color: rgba(255,91,110,.35); color: var(--err)}
+    .status.warn{border-color: rgba(255,209,102,.35); color: var(--warn)}
+    .tableCard{margin-top:14px}
+    table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius:12px;
+    }
+    thead th{
+      text-align:left;
+      font-size:12px;
+      color:var(--muted);
+      background: rgba(255,255,255,.05);
+      border-bottom:1px solid var(--line);
+      padding:10px;
+    }
+    tbody td{
+      padding:10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      font-size:13px;
+    }
+    tbody tr:hover{background: rgba(255,255,255,.03)}
+    .topline{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .small{font-size:12px; color:var(--muted)}
+    .linklike{color:#9bb4ff}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">
+      <h1>Panel Logística</h1>
+      <span class="pill">API base: <span id="apiBase" class="linklike"></span></span>
+    </div>
+  </header>
+
+  <main>
+
+    <div class="grid">
+
+      <section class="card">
+        <h2>Buscar chofer por DNI</h2>
+        <div class="row">
+          <div>
+            <label>DNI</label>
+            <input id="dniBuscar" placeholder="Ej: 333333 o 22.123.123" />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="primary" id="btnBuscar">Buscar</button>
+          <button id="btnLimpiarBuscar">Limpiar</button>
+        </div>
+        <div id="statusBuscar" class="status">Listo para buscar.</div>
+      </section>
+
+      <section class="card">
+        <h2>Crear chofer</h2>
+        <div class="row">
+          <div><label>ID</label><input id="id" placeholder="Ej: 10" /></div>
+          <div><label>DNI</label><input id="dni" placeholder="Ej: 555555" /></div>
+          <div><label>Nombre</label><input id="nombre" placeholder="Ej: Juan" /></div>
+          <div><label>Apellido</label><input id="apellido" placeholder="Ej: Pérez" /></div>
+          <div><label>Licencia</label><input id="licencia" placeholder="Ej: C2" /></div>
+          <div><label>Edad</label><input id="edad" placeholder="Ej: 35" /></div>
+        </div>
+        <div class="actions">
+          <button class="primary" id="btnCrear">Crear</button>
+          <button id="btnLimpiarCrear">Limpiar</button>
+        </div>
+        <div id="statusCrear" class="status">Listo para crear.</div>
+      </section>
+
+      <section class="card">
+        <h2>Actualizar chofer por DNI</h2>
+        <div class="row">
+          <div><label>DNI (clave)</label><input id="dniUpd" placeholder="Ej: 333333" /></div>
+          <div><label>Licencia (opcional)</label><input id="licenciaUpd" placeholder="Ej: D4" /></div>
+          <div><label>Nuevo nombre</label><input id="nombreUpd" placeholder="Opcional" /></div>
+          <div><label>Nuevo apellido</label><input id="apellidoUpd" placeholder="Opcional" /></div>
+          <div><label>Nueva edad</label><input id="edadUpd" placeholder="Opcional" /></div>
+        </div>
+        <div class="actions">
+          <button class="primary" id="btnActualizar">Actualizar</button>
+        </div>
+        <div id="statusUpd" class="status">Listo para actualizar.</div>
+      </section>
+
+      <section class="card">
+        <h2>Eliminar chofer por DNI</h2>
+        <div class="row">
+          <div><label>DNI</label><input id="dniDel" placeholder="Ej: 222222" /></div>
+        </div>
+        <div class="actions">
+          <button class="danger" id="btnBorrar">Borrar</button>
+        </div>
+        <div id="statusDel" class="status warn">Cuidado: borrado definitivo.</div>
+      </section>
+
+    </div>
+
+    <section class="card tableCard">
+      <div class="topline">
+        <div>
+          <h2 style="margin:0">Choferes</h2>
+          <div class="small">Listado general para control rápido.</div>
+        </div>
+        <div class="actions" style="margin:0">
+          <button class="primary" id="btnRefrescar">Refrescar</button>
+        </div>
+      </div>
+
+      <div id="statusTabla" class="status">Cargando...</div>
+
+      <div style="margin-top:10px; overflow:auto; border-radius:12px; border:1px solid var(--line)">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Nombre</th><th>Apellido</th><th>DNI</th><th>Licencia</th><th>Edad</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyChoferes"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="logistica.js"></script>
+</body>
+</html>

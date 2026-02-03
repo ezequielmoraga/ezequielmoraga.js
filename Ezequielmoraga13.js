@@ -51,39 +51,73 @@ app.get('/choferes', async (req, res) => {
     }
 });
 //read chofer dni
-app.get('/choferes/:dni', async (req, res) => {
-    try {
-        let chofer = await Choferes.findOne({ where: {dni:req.params.dni} });
-        res.json(chofer);
-    } catch (error) {
-        console.error("Error al leer chofer:", error);
-        res.status(500).send('Error al leer chofer');
-    }
+// app.get('/choferes/:dni', async (req, res) => {
+//     try {
+//         let chofer = await Choferes.findOne({ where: {dni:req.params.dni} });
+//         res.json(chofer);
+//     } catch (error) {
+//         console.error("Error al leer chofer:", error);
+//         res.status(500).send('Error al leer chofer');
+//     }
+// });
+app.get('/choferes/dni/:dni', async (req, res) => {
+  try {
+    const chofer = await Choferes.findOne({ where: { dni: req.params.dni } });
+    if (!chofer) return res.status(404).send('Chofer no encontrado');
+    res.json(chofer);
+  } catch (error) {
+    console.error("Error al leer chofer:", error);
+    res.status(500).send('Error al leer chofer');
+  }
 });
 
 //actualizo chofer busco por dni
-app.put('/choferes/:dni', async (req, res) => {
-    const { dni } = req.params;
-    const { nombre, apellido, edad } = req.body;
-    try {
-        await Choferes.update({ nombre, apellido, edad }, { where: { dni } });
-        res.send('Datos de chofer actualizados con éxito');
-    } catch (error) {
-        console.error("Error al actualizar chofer:", error);
-        res.status(500).send('Error al actualizar chofer');
-    }
-});
+// app.put('/choferes/:dni', async (req, res) => {
+//     const { dni } = req.params;
+//     const { nombre, apellido, edad } = req.body;
+//     try {
+//         await Choferes.update({ nombre, apellido, edad }, { where: { dni } });
+//         res.send('Datos de chofer actualizados con éxito');
+//     } catch (error) {
+//         console.error("Error al actualizar chofer:", error);
+//         res.status(500).send('Error al actualizar chofer');
+//     }
+// });
 
+app.put('/choferes/dni/:dni', async (req, res) => {
+  try {
+    const [updated] = await Choferes.update(
+      req.body,
+      { where: { dni: req.params.dni } }
+    );
+    if (updated === 0) return res.status(404).send('Chofer no encontrado');
+    res.send('Chofer actualizado con éxito');
+  } catch (error) {
+    console.error("Error al actualizar chofer:", error);
+    res.status(500).send('Error al actualizar chofer');
+  }
+}); 
 //elimino chofer por nombre
-app.delete('/choferes/:nombre', async (req, res) => {
-    const { nombre } = req.params;
-    try {
-        await Choferes.destroy({ where: { nombre } });
-        res.send('Chofer eliminado con éxito');
-    } catch (error) {
-        console.error("Error al eliminar chofer:", error);
-        res.status(500).send('Error al eliminar chofer');
-    }
+// app.delete('/choferes/:nombre', async (req, res) => {
+//     const { nombre } = req.params;
+//     try {
+//         await Choferes.destroy({ where: { nombre } });
+//         res.send('Chofer eliminado con éxito');
+//     } catch (error) {
+//         console.error("Error al eliminar chofer:", error);
+//         res.status(500).send('Error al eliminar chofer');
+//     }
+// });
+//elimino chofer por dni
+app.delete('/choferes/dni/:dni', async (req, res) => {
+  try {
+    const deleted = await Choferes.destroy({ where: { dni: req.params.dni } });
+    if (deleted === 0) return res.status(404).send('Chofer no encontrado');
+    res.send('Chofer eliminado con éxito');
+  } catch (error) {
+    console.error("Error al eliminar chofer:", error);
+    res.status(500).send('Error al eliminar chofer');
+  }
 });
 
 
