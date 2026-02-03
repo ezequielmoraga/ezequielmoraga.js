@@ -1,0 +1,14 @@
+{
+  "development": {
+    "dialect": "sqlite",
+    "storage": "dbLogistica.sqlite"
+  },
+  "test": {
+    "dialect": "sqlite",
+    "storage": "dbLogistica_test.sqlite"
+  },
+  "production": {
+    "dialect": "sqlite",
+    "storage": "dbLogistica_prod.sqlite"
+  }
+}

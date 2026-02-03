@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Choferes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 1em;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5em;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.5em;
+        }
+        .form-group button {
+            padding: 0.5em 2em;
+        }
+        .response {
+            margin-top: 1em;
+            padding: 1em;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>API Choferes</h1>
+
+        <!-- Formulario para crear un chofer -->
+        <h2>Crear Chofer</h2>
+        <div class="form-group">
+            <label for="create-id">ID:</label>
+            <input type="text" id="create-id">
+        </div>
+        <div class="form-group">
+            <label for="create-nombre">Nombre:</label>
+            <input type="text" id="create-nombre">
+        </div>
+        <div class="form-group">
+            <label for="create-apellido">Apellido:</label>
+            <input type="text" id="create-apellido">
+        </div>
+        <div class="form-group">
+            <label for="create-dni">DNI:</label>
+            <input type="text" id="create-dni">
+        </div>
+        <div class="form-group">
+            <label for="create-licencia">Licencia:</label>
+            <input type="text" id="create-licencia">
+        </div>
+        <div class="form-group">
+            <label for="create-edad">Edad:</label>
+            <input type="text" id="create-edad">
+        </div>
+        <div class="form-group">
+            <button onclick="createChofer()">Crear Chofer</button>
+        </div>
+
+        <!-- Formulario para leer todos los choferes -->
+        <h2>Leer Todos los Choferes</h2>
+        <div class="form-group">
+            <button onclick="getAllChoferes()">Obtener Choferes</button>
+        </div>
+        <div id="choferes-response" class="response"></div>
+
+        <!-- Formulario para leer un chofer por DNI -->
+        <h2>Leer Chofer por DNI</h2>
+        <div class="form-group">
+            <label for="read-dni">DNI:</label>
+            <input type="text" id="read-dni">
+        </div>
+        <div class="form-group">
+            <button onclick="getChoferByDNI()">Obtener Chofer</button>
+        </div>
+        <div id="chofer-response" class="response"></div>
+
+        <!-- Formulario para actualizar un chofer -->
+        <h2>Actualizar Chofer</h2>
+        <div class="form-group">
+            <label for="update-dni">DNI:</label>
+            <input type="text" id="update-dni">
+        </div>
+        <div class="form-group">
+            <label for="update-nombre">Nuevo Nombre:</label>
+            <input type="text" id="update-nombre">
+        </div>
+        <div class="form-group">
+            <label for="update-apellido">Nuevo Apellido:</label>
+            <input type="text" id="update-apellido">
+        </div>
+        <div class="form-group">
+            <label for="update-edad">Nueva Edad:</label>
+            <input type="text" id="update-edad">
+        </div>
+        <div class="form-group">
+            <button onclick="updateChofer()">Actualizar Chofer</button>
+        </div>
+
+        <!-- Formulario para eliminar un chofer por nombre -->
+        <h2>Eliminar Chofer por Nombre</h2>
+        <div class="form-group">
+            <label for="delete-nombre">Nombre:</label>
+            <input type="text" id="delete-nombre">
+        </div>
+        <div class="form-group">
+            <button onclick="deleteChofer()">Eliminar Chofer</button>
+        </div>
+    </div>
+
+    <script>
+        async function createChofer() {
+            const id = document.getElementById('create-id').value;
+            const nombre = document.getElementById('create-nombre').value;
+            const apellido = document.getElementById('create-apellido').value;
+            const dni = document.getElementById('create-dni').value;
+            const licencia = document.getElementById('create-licencia').value;
+            const edad = document.getElementById('create-edad').value;
+
+            const response = await fetch('http://localhost:7777/choferes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id, nombre, apellido, dni, licencia, edad })
+            });
+            const result = await response.text();
+            alert(result);
+        }
+
+        async function getAllChoferes() {
+            const response = await fetch('http://localhost:7777/choferes');
+            const choferes = await response.json();
+            document.getElementById('choferes-response').innerText = JSON.stringify(choferes, null, 2);
+        }
+
+        async function getChoferByDNI() {
+            const dni = document.getElementById('read-dni').value;
+            if(!dni)
+            {
+                document.getElementById('chofer-response').innerText = "No existe chofer";
+            }else
+            {
+                const response = await fetch(`http://localhost:7777/choferes/${dni}`);
+                const chofer = await response.json();
+                document.getElementById('chofer-response').innerText = JSON.stringify(chofer, null, 2);
+            }
+            
+        }
+
+        async function updateChofer() {
+            const dni = document.getElementById('update-dni').value;
+            const nombre = document.getElementById('update-nombre').value;
+            const apellido = document.getElementById('update-apellido').value;
+            const edad = document.getElementById('update-edad').value;
+
+            const response = await fetch(`http://localhost:7777/choferes/${dni}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nombre, apellido, edad })
+            });
+            const result = await response.text();
+            alert(result);
+        }
+
+        async function deleteChofer() {
+            const nombre = document.getElementById('delete-nombre').value;
+            const response = await fetch(`http://localhost:7777/choferes/${nombre}`, {
+                method: 'DELETE'
+            });
+            const result = await response.text();
+            alert(result);
+        }
+    </script>
+</body>
+</html>
